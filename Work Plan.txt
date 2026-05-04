@@ -1,0 +1,164 @@
+Event Ticketing System Work Plan
+
+ Phase 1: Database Design (Mongoose Models)
+
+User Model:
+        ◦ Fields: Name, Email, Password (hashed), Role.
+        ◦ Roles: Attendee, Organizer, Admin.
+Event Model:
+        ◦ Fields: Title, Description, Organizer (Reference to User), Gallery/Images, Venue Location (coordinates/address for map), Date & Time, Refund Policy, Event Rules.
+        ◦ Ticketing Data: Ticket Availability (Total Capacity), Current Available Tickets, Price. (Note: Kept to a single ticket type as simplified for the demo).
+Booking Model:
+        ◦ Fields: Attendee (Reference to User), Event (Reference to Event), Quantity, Total Price, Booking Status (e.g., Pending, Confirmed), CreatedAt.
+Ticket Model:
+        ◦ Fields: Unique Ticket ID, Booking ID (Reference to Booking), Attendee Name, Event Reference, Ticket Type, Validation Token (secure string), QR Code (URL or base64 data), Status (valid, checked-in), Check-in Timestamp.
+
+
+
+Phase 2: Role-Based Access & Authentication
+
+
+Auth Service: Implement JWT (JSON Web Tokens) for stateless authentication.
+    • Role Middleware: Create an Express middleware (e.g., authorizeRoles('Organizer', 'Admin')) to protect routes.
+
+    • Attendees can : browse, book, and view their history.
+      
+    • Organizers can : create events, manage their events, and use the check-in API.
+      
+    • Super Admin has basic oversight.
+
+
+
+
+
+
+
+
+
+
+
+Phase 3: Core API Endpoints Development
+
+
+A. Event Discovery (Public & Attendee)
+
+    • GET /api/events: Fetches a list of events.
+      
+        ◦ Query Parameters for Filtering: keyword (search), category, date, location, price_min, price_max, availability (e.g., only show events with available tickets).
+        ◦ 
+    • GET /api/events/:eventId: Fetches detailed event data, including the description, gallery, venue map location, rules, and refund policy.
+
+
+
+
+
+
+
+
+
+
+
+B. Organizer Dashboard (Organizer Only)
+    • POST /api/organizer/events: Create a new event.
+    • 
+    • PUT /api/organizer/events/:eventId: Edit an existing event.
+    • 
+    • GET /api/organizer/events: View all events created by this specific organizer.
+    • 
+    • GET /api/organizer/events/:eventId/attendees: View a list of attendees and check their ticket statuses for a specific event.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+C. Ticketing & Booking Flow (Attendee Only)
+
+    • POST /api/bookings: The core booking endpoint.
+        ◦ Payload: eventId, quantity.
+          
+        ◦ Logic: Start a database transaction (if using a MongoDB replica set) to ensure ticket availability is reduced safely without race conditions. Generate the booking confirmation.
+          
+        ◦ Trigger Service: Call the Digital Ticket Generation service.
+          
+    • GET /api/tickets: Fetch the logged-in user's tickets, categorized by upcoming and past tickets.
+      
+    • GET /api/tickets/:ticketId: Fetch specific ticket details, including the scannable QR code.
+
+
+
+
+
+
+
+
+D. Check-In API (Organizer/Scanner Only)
+
+    • POST /api/check-in: Validates tickets at the door.
+        ◦ Payload: ticketToken, eventId.
+        ◦ Logic Steps:
+            1. Find ticket by ticketToken.
+            2. Verify the ticket exists and matches the eventId.
+            3. Critical Duplicate Protection: Check if the ticket status is already checked-in.
+
+        ◦ Response:
+            1. If valid: Return success and mark as checked-in.
+            2. If duplicate: Reject immediately and return the timestamp of the very first check-in.
+
+
+
+
+
+
+
+
+
+
+
+Phase 4: Business Logic & Services
+
+Ticket Generation Service:
+    • Triggered after a successful booking.
+      
+    • Loops based on the quantity selected.
+      
+    • Generates a secure, random validationToken for each ticket.
+
+    • QR Code Service:
+    • Use a library like qrcode in Node.js.
+      
+    • Encode the validationToken and eventId into the QR code image.
+      
+    • Save the QR code string/URL to the Ticket document.
+
+
+
+
+
+
+
+
+
+Phase 5: Implementation Order (Step-by-Step Guide)
+
+    1. Setup & Architecture: Initialize Node.js, install dependencies (express, mongoose, jsonwebtoken, bcrypt, qrcode), and set up your Express server and MongoDB connection.
+       
+    2. Auth & Users: Build the User model, register/login endpoints, and the JWT/Role middleware.
+       
+    3. Event Management: Build the Event model and the Organizer CRUD routes. Ensure Organizers can only edit their own events.
+       
+    4. Discovery: Build the public Event GET routes, implementing Mongoose queries to handle the various search and filter requirements.
+       
+    5. Booking Engine: Build the Booking and Ticket models. Implement the booking flow, ensuring you check for available capacity before confirming.
+       
+    6. Ticket Generation: Integrate the QR code library and ensure that confirming a booking spits out the correct number of unique digital tickets.
+       
+    7. The Check-in Scanner: Build the check-in endpoint, focusing heavily on the error handling for invalid tokens, wrong events, and the critical duplicate scan protection.

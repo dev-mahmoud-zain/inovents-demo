@@ -17,7 +17,7 @@ router.get('/:eventId', (req, res) => eventController.getOne(req, res));
 // ─── Organizer ───────────────────────────────────────────────────────────────
 // POST /api/events/organizer  →  create event
 router.post(
-  '/organizer',
+  '/create',
   authenticate,
   authorizeRoles(Role.Organizer, Role.Admin),
   (req, res) => eventController.create(req, res),
@@ -25,7 +25,7 @@ router.post(
 
 // GET /api/events/organizer/mine  →  list organizer's own events
 router.get(
-  '/organizer/mine',
+  '/my-events',
   authenticate,
   authorizeRoles(Role.Organizer, Role.Admin),
   (req, res) => eventController.getMyEvents(req, res),
@@ -33,7 +33,7 @@ router.get(
 
 // PUT /api/events/organizer/:eventId  →  update event
 router.put(
-  '/organizer/:eventId',
+  '/update/:eventId',
   authenticate,
   authorizeRoles(Role.Organizer, Role.Admin),
   (req, res) => eventController.update(req, res),
@@ -41,7 +41,7 @@ router.put(
 
 // GET /api/events/organizer/:eventId/attendees  →  attendee list
 router.get(
-  '/organizer/:eventId/attendees',
+  '/attendees/:eventId',
   authenticate,
   authorizeRoles(Role.Organizer, Role.Admin),
   (req, res) => ticketController.getEventAttendees(req, res),

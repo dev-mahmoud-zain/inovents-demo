@@ -1,0 +1,423 @@
+{
+	"info": {
+		"_postman_id": "aa4139d8-3457-4a66-80fe-7da4953a5a6c",
+		"name": "inovents - API Collection",
+		"description": "### Welcome to the inovents API Collection\n\nThis collection contains all the endpoints needed to interact with the Event Ticketing System. \n\n### Setup\n1.  **Base URL**: Set a variable `BASE_URL` to your server's root (e.g., `http://localhost:3000`).\n2.  **Authentication**: Most endpoints require a JWT token. After logging in, copy the `token` from the response and set it as a variable named `TOKEN`.\n3.  **Variables**: The collection uses `{{BASE_URL}}` and `{{TOKEN}}` throughout.\n\n### Modules\n- **Auth**: Registration and user access.\n- **Events**: Discovery and management (Organizers).\n- **Bookings**: Ticket purchasing (Attendees).\n- **Tickets**: Digital ticket retrieval and entry validation.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "0. System",
+			"item": [
+				{
+					"name": "Server Info",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Health Check",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/api/health",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"health"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "1. Auth",
+			"item": [
+				{
+					"name": "Register",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"name\": \"John Doe\",\n  \"email\": \"john@example.com\",\n  \"password\": \"password123\",\n  \"role\": \"Organizer\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/api/auth/register",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Login",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"email\": \"john@example.com\",\n  \"password\": \"password123\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/api/auth/login",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"auth",
+								"login"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "2. Events",
+			"item": [
+				{
+					"name": "Get All Events (Public)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/api/events",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"events"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Event Details (Public)",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{BASE_URL}}/api/events/EVENT_ID_HERE",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"events",
+								"EVENT_ID_HERE"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Event (Organizer)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{TOKEN}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"title\": \"Summer Music Festival\",\n  \"description\": \"A night of great music and fun.\",\n  \"venue\": {\n    \"address\": \"Alexandria, Egypt\",\n    \"coordinates\": { \"lat\": 31.2, \"lng\": 29.9 }\n  },\n  \"dateTime\": \"2024-07-15T20:00:00Z\",\n  \"totalCapacity\": 500,\n  \"price\": 50.00,\n  \"gallery\": [\"https://example.com/img.jpg\"],\n  \"refundPolicy\": \"No refunds.\",\n  \"rules\": \"No smoking.\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/api/events/create",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"events",
+								"create"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get My Events (Organizer)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{TOKEN}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{BASE_URL}}/api/events/my-events",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"events",
+								"my-events"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Event (Organizer)",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{TOKEN}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"title\": \"Updated Festival Name\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/api/events/update/EVENT_ID_HERE",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"events",
+								"update",
+								"EVENT_ID_HERE"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Event Attendees (Organizer)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{TOKEN}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{BASE_URL}}/api/events/attendees/EVENT_ID_HERE",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"events",
+								"attendees",
+								"EVENT_ID_HERE"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "3. Bookings",
+			"item": [
+				{
+					"name": "Create Booking (Attendee)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{TOKEN}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"eventId\": \"EVENT_ID_HERE\",\n  \"quantity\": 2\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/api/bookings",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"bookings"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get My Bookings (Attendee)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{TOKEN}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{BASE_URL}}/api/bookings",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"bookings"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "4. Tickets",
+			"item": [
+				{
+					"name": "Get My Tickets (Attendee)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{TOKEN}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{BASE_URL}}/api/tickets",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"tickets"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Ticket Details (Attendee)",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{TOKEN}}",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "{{BASE_URL}}/api/tickets/TICKET_ID_HERE",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"tickets",
+								"TICKET_ID_HERE"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Ticket Check-In (Organizer)",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "Bearer {{TOKEN}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"ticketToken\": \"TOKEN_FROM_QR\",\n  \"eventId\": \"EVENT_ID_HERE\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASE_URL}}/api/tickets/check-in",
+							"host": [
+								"{{BASE_URL}}"
+							],
+							"path": [
+								"api",
+								"tickets",
+								"check-in"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

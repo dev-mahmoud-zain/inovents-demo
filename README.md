@@ -91,10 +91,10 @@ Server/
 ### 2. Event Module (`/api/events`)
 - **GET /**: Public discovery with filters (`keyword`, `date`, `price_min`, `price_max`, `availability`).
 - **GET /:eventId**: Detailed info for a single event.
-- **POST /organizer**: Create a new event (Organizer only).
-- **GET /organizer/mine**: List events created by the logged-in organizer.
-- **PUT /organizer/:eventId**: Update event details.
-- **GET /organizer/:eventId/attendees**: View all tickets and check-in statuses for an event.
+- **POST /create**: Create a new event (Organizer only).
+- **GET /my-events**: List events created by the logged-in organizer.
+- **PUT /update/:eventId**: Update event details (Organizer only).
+- **GET /attendees/:eventId**: View all tickets and check-in statuses for an event (Organizer only).
 
 ### 3. Booking Module (`/api/bookings`)
 - **POST /**: Book tickets for an event (`eventId`, `quantity`).

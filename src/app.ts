@@ -18,7 +18,7 @@ const createApp = (): Application => {
   app.use(express.urlencoded({ extended: true }));
 
   // ─── Welcome / Server Info ──────────────────────────────────────────────
-  app.get('/', (_req: Request, res: Response) => {
+  app.get(["/", "/api"], (_req: Request, res: Response) => {
     res.status(200).json({
       success: true,
       message: 'Welcome to the inovents API',

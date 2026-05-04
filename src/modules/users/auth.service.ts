@@ -20,8 +20,14 @@ export class AuthService {
     const exists = await UserModel.findOne({ email: dto.email });
     if (exists) throw new Error('Email already in use.');
 
-    const hashed = await hashPassword(dto.password);
-    const user = await UserModel.create({ ...dto, password: hashed });
+    const { name, email, role, password } = dto;
+    const hashed = await hashPassword(password);
+    const user = await UserModel.create({
+      name,
+      email,
+      role: role || Role.Attendee,
+      password: hashed,
+    });
 
     const token = signToken({ _id: user._id, role: user.role });
     const { password: _pw, ...safeUser } = user.toObject();

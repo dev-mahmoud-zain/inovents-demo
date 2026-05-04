@@ -7,7 +7,8 @@ export class AuthController {
     try {
       const result = await authService.register(req.body);
       sendSuccess(res, result, 'Registration successful.', 201);
-    } catch (err: unknown) {
+    } catch (err: any) {
+      console.error('Registration failed details:', JSON.stringify(err, null, 2));
       const msg = err instanceof Error ? err.message : 'Registration failed.';
       sendError(res, msg, 400);
     }

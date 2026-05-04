@@ -17,6 +17,20 @@ const createApp = (): Application => {
   app.use(express.json({ limit: '10mb' }));
   app.use(express.urlencoded({ extended: true }));
 
+  // ─── Welcome / Server Info ──────────────────────────────────────────────
+  app.get('/', (_req: Request, res: Response) => {
+    res.status(200).json({
+      success: true,
+      message: 'Welcome to the inovents API',
+      version: '1.0.0',
+      environment: process.env.NODE_ENV || 'development',
+      healthCheck: '/api/health',
+      project: 'inovents - Event Ticketing System',
+      description: 'A modern platform for event discovery, secure booking, and scannable digital ticket management.',
+      purpose: 'Technical demonstration of a scalable event management backend.'
+    });
+  });
+
   // ─── Health Check ─────────────────────────────────────────────────────────
   app.get('/api/health', (_req: Request, res: Response) => {
     res.status(200).json({ success: true, status: 'ok', timestamp: new Date().toISOString() });

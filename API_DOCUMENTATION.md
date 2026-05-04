@@ -13,6 +13,18 @@ Most endpoints require a JWT token in the `Authorization` header:
 
 ---
 
+## 0. System Endpoints
+
+### Server Info
+- **Endpoint:** `GET /`
+- **Description:** Returns basic information about the server and its environment.
+
+### Health Check
+- **Endpoint:** `GET /api/health`
+- **Description:** Verifies the server status.
+
+---
+
 ## 1. Auth Module (`/auth`)
 
 ### Register User
@@ -142,8 +154,4 @@ Most endpoints require a JWT token in the `Authorization` header:
 
 ---
 
-## 5. System
 
-### Health Check
-- **Endpoint:** `GET /api/health`
-- **Description:** Verifies the server status.

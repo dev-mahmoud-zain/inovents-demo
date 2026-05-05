@@ -30,7 +30,8 @@ const createApp = (): Application => {
       healthCheck: '/api/health',
       project: 'inovents - Event Ticketing System',
       description: 'A modern platform for event discovery, secure booking, and scannable digital ticket management.',
-      purpose: 'Technical demonstration of a scalable event management backend.'
+      purpose: 'Technical demonstration of a scalable event management backend.',
+      api_documentation: 'https://documenter.getpostman.com/view/40056651/2sBXqMGyUZ',
     });
   });
 

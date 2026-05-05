@@ -3,6 +3,7 @@ import { User } from './user.entity';
 import { IUser } from '../../common/interfaces';
 import { hashPassword, comparePassword, signToken } from '../../common/utils';
 import { Role } from '../../common/enums';
+import { AppError } from '../../common/utils/app-error';
 
 interface RegisterDto {
   name: string;
@@ -21,7 +22,7 @@ export class AuthService {
 
   async register(dto: RegisterDto): Promise<{ user: Partial<IUser>; token: string }> {
     const exists = await this.userRepository.findOne({ where: { email: dto.email } });
-    if (exists) throw new Error('Email already in use.');
+    if (exists) throw new AppError('Email already in use.', 400);
 
     const { name, email, role, password } = dto;
     const hashed = await hashPassword(password);
@@ -47,10 +48,10 @@ export class AuthService {
       select: ['id', 'name', 'email', 'password', 'role', 'createdAt', 'updatedAt']
     });
     
-    if (!user) throw new Error('Invalid credentials.');
+    if (!user) throw new AppError('Invalid credentials.', 401);
 
     const isMatch = await comparePassword(dto.password, user.password);
-    if (!isMatch) throw new Error('Invalid credentials.');
+    if (!isMatch) throw new AppError('Invalid credentials.', 401);
 
     const token = signToken({ id: user.id, role: user.role });
     const { password: _pw, ...safeUser } = user;

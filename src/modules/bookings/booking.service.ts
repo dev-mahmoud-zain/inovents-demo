@@ -6,6 +6,7 @@ import { User } from '../users/user.entity';
 import { IBooking } from '../../common/interfaces';
 import { BookingStatus, TicketStatus } from '../../common/enums';
 import { generateQrCode, generateSecureToken, generateTicketId } from '../../common/utils';
+import { AppError } from '../../common/utils/app-error';
 
 interface CreateBookingDto {
   attendeeId: string;
@@ -24,11 +25,11 @@ export class BookingService {
         lock: { mode: 'pessimistic_write' }, // Similar to session in Mongo for isolation
       });
 
-      if (!event) throw new Error('Event not found.');
+      if (!event) throw new AppError('Event not found.', 404);
 
       // 2. Check availability
       if (event.availableTickets < dto.quantity) {
-        throw new Error(`Only ${event.availableTickets} ticket(s) remaining.`);
+        throw new AppError(`Only ${event.availableTickets} ticket(s) remaining.`, 400);
       }
 
       // 3. Deduct tickets atomically

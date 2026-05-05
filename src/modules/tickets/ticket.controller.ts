@@ -1,59 +1,44 @@
 import { Request, Response } from 'express';
 import { ticketService } from './ticket.service';
-import { sendSuccess, sendError } from '../../common/utils';
+import { sendSuccess } from '../../common/utils';
 import { AuthRequest } from '../../common/types';
+import { catchAsync } from '../../common/utils/catch-async';
+import { AppError } from '../../common/utils/app-error';
 
 export class TicketController {
   // GET /api/tickets
-  async getMyTickets(req: Request, res: Response): Promise<void> {
-    try {
-      const user = (req as AuthRequest).user!;
-      const tickets = await ticketService.findByAttendee(user.id);
-      sendSuccess(res, tickets, 'Tickets fetched.');
-    } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : 'Failed to fetch tickets.';
-      sendError(res, msg, 500);
-    }
-  }
+  getMyTickets = catchAsync(async (req: Request, res: Response): Promise<void> => {
+    const user = (req as AuthRequest).user!;
+    const tickets = await ticketService.findByAttendee(user.id);
+    sendSuccess(res, tickets, 'Tickets fetched.');
+  });
 
   // GET /api/tickets/:ticketId
-  async getOne(req: Request, res: Response): Promise<void> {
-    try {
-      const ticket = await ticketService.findById(req.params.ticketId as string);
-      if (!ticket) {
-        sendError(res, 'Ticket not found.', 404);
-        return;
-      }
-      sendSuccess(res, ticket, 'Ticket fetched.');
-    } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : 'Failed to fetch ticket.';
-      sendError(res, msg, 500);
+  getOne = catchAsync(async (req: Request, res: Response): Promise<void> => {
+    const ticket = await ticketService.findById(req.params.ticketId as string);
+    if (!ticket) {
+      throw new AppError('Ticket not found.', 404);
     }
-  }
+    sendSuccess(res, ticket, 'Ticket fetched.');
+  });
 
   // POST /api/check-in
-  async checkIn(req: Request, res: Response): Promise<void> {
-    try {
-      const { ticketToken, eventId } = req.body;
-      const result = await ticketService.checkIn(ticketToken, eventId);
-      const statusCode = result.success ? 200 : 400;
-      res.status(statusCode).json({ success: result.success, message: result.message, checkedInAt: result.checkedInAt });
-    } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : 'Check-in failed.';
-      sendError(res, msg, 500);
+  checkIn = catchAsync(async (req: Request, res: Response): Promise<void> => {
+    const { ticketCode, eventId } = req.body;
+    const result = await ticketService.checkIn(ticketCode, eventId);
+    
+    if (!result.success) {
+      throw new AppError(result.message, 400);
     }
-  }
+    
+    sendSuccess(res, { checkedInAt: result.checkedInAt }, result.message, 200);
+  });
 
   // GET /api/organizer/events/:eventId/attendees
-  async getEventAttendees(req: Request, res: Response): Promise<void> {
-    try {
-      const tickets = await ticketService.findEventAttendees(req.params.eventId as string);
-      sendSuccess(res, tickets, 'Attendees fetched.');
-    } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : 'Failed to fetch attendees.';
-      sendError(res, msg, 500);
-    }
-  }
+  getEventAttendees = catchAsync(async (req: Request, res: Response): Promise<void> => {
+    const tickets = await ticketService.findEventAttendees(req.params.eventId as string);
+    sendSuccess(res, tickets, 'Attendees fetched.');
+  });
 }
 
 export const ticketController = new TicketController();

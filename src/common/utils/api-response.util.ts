@@ -1,10 +1,10 @@
 import { Response } from 'express';
 
 export interface ApiResponse<T = unknown> {
-  success: boolean;
   message: string;
+  info?: any;
   data?: T;
-  errors?: unknown;
+  statusCode: number;
 }
 
 export const sendSuccess = <T>(
@@ -12,17 +12,13 @@ export const sendSuccess = <T>(
   data: T,
   message = 'Success',
   statusCode = 200,
+  info?: any
 ): Response => {
-  const body: ApiResponse<T> = { success: true, message, data };
-  return res.status(statusCode).json(body);
-};
-
-export const sendError = (
-  res: Response,
-  message = 'An error occurred',
-  statusCode = 500,
-  errors?: unknown,
-): Response => {
-  const body: ApiResponse = { success: false, message, errors };
+  const body: ApiResponse<T> = { 
+    message,
+    ...(info && { info }),
+    data,
+    statusCode 
+  };
   return res.status(statusCode).json(body);
 };

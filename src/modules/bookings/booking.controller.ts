@@ -1,37 +1,28 @@
 import { Request, Response } from 'express';
 import { bookingService } from './booking.service';
-import { sendSuccess, sendError } from '../../common/utils';
+import { sendSuccess } from '../../common/utils';
 import { AuthRequest } from '../../common/types';
+import { catchAsync } from '../../common/utils/catch-async';
 
 export class BookingController {
   // POST /api/bookings
-  async create(req: Request, res: Response): Promise<void> {
-    try {
-      const user = (req as AuthRequest).user!;
-      const { eventId, quantity } = req.body;
-      const booking = await bookingService.createBooking({
-        attendeeId: user.id,
-        eventId,
-        quantity: Number(quantity),
-      });
-      sendSuccess(res, booking, 'Booking confirmed and tickets generated.', 201);
-    } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : 'Booking failed.';
-      sendError(res, msg, 400);
-    }
-  }
+  create = catchAsync(async (req: Request, res: Response): Promise<void> => {
+    const user = (req as AuthRequest).user!;
+    const { eventId, ticketsCount } = req.body;
+    const booking = await bookingService.createBooking({
+      attendeeId: user.id,
+      eventId,
+      quantity: Number(ticketsCount),
+    });
+    sendSuccess(res, booking, 'Booking confirmed and tickets generated.', 201);
+  });
 
   // GET /api/bookings
-  async getMyBookings(req: Request, res: Response): Promise<void> {
-    try {
-      const user = (req as AuthRequest).user!;
-      const bookings = await bookingService.findByAttendee(user.id);
-      sendSuccess(res, bookings, 'Bookings fetched.');
-    } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : 'Failed to fetch bookings.';
-      sendError(res, msg, 500);
-    }
-  }
+  getMyBookings = catchAsync(async (req: Request, res: Response): Promise<void> => {
+    const user = (req as AuthRequest).user!;
+    const bookings = await bookingService.findByAttendee(user.id);
+    sendSuccess(res, bookings, 'Bookings fetched.');
+  });
 }
 
 export const bookingController = new BookingController();

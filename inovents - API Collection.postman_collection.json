@@ -2,7 +2,7 @@
 	"info": {
 		"_postman_id": "7a7c5d7d-639d-4e09-af04-ae16a9e8c40d",
 		"name": "inovents - API Collection",
-		"description": "### Welcome to the inovents API Collection\n\nThis collection contains all the endpoints needed to interact with the Event Ticketing System.\n\n### Setup\n\n1. **Base URL**: Set a variable `BASE_URL` to your server's root : [https://inovents-demo.vercel.app/](https://inovents-demo.vercel.app/)\n    \n2. **Authentication**: Most endpoints require a JWT token. After logging in, copy the `token` from the response and set it as a variable named `TOKEN`.\n    \n3. **Variables**: The collection uses `{{BASE_URL}}` and `{{TOKEN}}` throughout.\n    \n\n### Modules\n\n- **Auth**: Registration and user access.\n    \n- **Events**: Discovery and management (Organizers).\n    \n- **Bookings**: Ticket purchasing (Attendees).\n    \n- **Tickets**: Digital ticket retrieval and entry validation.",
+		"description": "### Welcome to the inovents API Collection\n\nThis collection contains all the endpoints needed to interact with the Event Ticketing System.\n\n### Setup\n\n1. **Base URL**: Set a variable `BASE_URL` to your server's root : [https://inovents-demo.vercel.app/](https://inovents-demo.vercel.app/)\n    \n2. **Authentication**: Most endpoints require a JWT token. After logging in, copy the `token` from the response and set it as a variable named `TOKEN`.\n    \n3. **Variables**: The collection uses `{{BASE_URL}}` and `{{TOKEN}}` throughout.\n    \n\n### Modules\n\n- **Auth**: Registration and user access.\n    \n- **Events**: Discovery and management (Organizers).\n    \n- **Bookings**: Ticket purchasing (Attendees).\n    \n- **Tickets**: Digital ticket retrieval and entry validation.\n\n### Response Structure\n\nAll responses follow a standardized format:\n```json\n{\n  \"message\": \"Success message\",\n  \"data\": { ... },\n  \"statusCode\": 200\n}\n```",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
 		"_exporter_id": "40056651"
 	},
@@ -74,7 +74,7 @@
 								"register"
 							]
 						},
-						"description": "**Function:** Creates a new user account.\n**Required Fields:** `name`, `email`, `password`.\n**Optional Fields:** `role` (Attendee, Organizer, Admin - defaults to Attendee).\n**Expected Response:** `201 Created` with the user profile and an initial JWT token."
+						"description": "**Function:** Creates a new user account.\n**Required Fields:** `name`, `email`, `password`.\n**Optional Fields:** `role` (Attendee, Organizer, Admin - defaults to Attendee).\n**Expected Response:** `201 Created` with the user profile and an initial JWT token inside the `data` property."
 					},
 					"response": []
 				},
@@ -102,7 +102,7 @@
 								"login"
 							]
 						},
-						"description": "**Function:** Authenticates a user and returns a token.\n**Required Fields:** `email`, `password`.\n**Optional Fields:** None.\n**Expected Response:** `200 OK` with user data and a JWT `token`."
+						"description": "**Function:** Authenticates a user and returns a token.\n**Required Fields:** `email`, `password`.\n**Optional Fields:** None.\n**Expected Response:** `200 OK` with user data and a JWT `token` inside the `data` property."
 					},
 					"response": []
 				}
@@ -126,7 +126,7 @@
 								"events"
 							]
 						},
-						"description": "**Function:** Lists all available events with filtering options.\n**Required Fields:** None.\n**Optional Fields:** `keyword`, `date`, `price_min`, `price_max`, `availability` (Query parameters).\n**Expected Response:** `200 OK` with an array of event summaries."
+						"description": "**Function:** Lists all available events with filtering options.\n**Required Fields:** None.\n**Optional Fields:** `keyword`, `date`, `price_min`, `price_max`, `availability` (Query parameters).\n**Expected Response:** `200 OK` with an array of event summaries inside the `data` property."
 					},
 					"response": []
 				},
@@ -145,7 +145,7 @@
 								"EVENT_ID_HERE"
 							]
 						},
-						"description": "**Function:** Fetches detailed information for a single event.\n**Required Fields:** `eventId` (URL parameter).\n**Optional Fields:** None.\n**Expected Response:** `200 OK` with full event details including venue and gallery."
+						"description": "**Function:** Fetches detailed information for a single event.\n**Required Fields:** `eventId` (URL parameter).\n**Optional Fields:** None.\n**Expected Response:** `200 OK` with full event details inside the `data` property."
 					},
 					"response": []
 				},
@@ -179,7 +179,7 @@
 								"create"
 							]
 						},
-						"description": "**Function:** Allows an Organizer to post a new event.\n**Required Fields:** `title`, `description`, `venue`, `dateTime`, `totalCapacity`, `price`.\n**Optional Fields:** `gallery`, `refundPolicy`, `rules`.\n**Expected Response:** `201 Created` with the new event object."
+						"description": "**Function:** Allows an Organizer to post a new event.\n**Required Fields:** `title`, `description`, `venue`, `dateTime`, `totalCapacity`, `price`.\n**Optional Fields:** `gallery`, `refundPolicy`, `rules`.\n**Expected Response:** `201 Created` with the new event object inside the `data` property."
 					},
 					"response": []
 				},
@@ -204,7 +204,7 @@
 								"my-events"
 							]
 						},
-						"description": "**Function:** Lists events created by the authenticated organizer.\n**Required Fields:** JWT Token.\n**Optional Fields:** None.\n**Expected Response:** `200 OK` with an array of events owned by the user."
+						"description": "**Function:** Lists events created by the authenticated organizer.\n**Required Fields:** JWT Token.\n**Optional Fields:** None.\n**Expected Response:** `200 OK` with an array of events owned by the user inside the `data` property."
 					},
 					"response": []
 				},
@@ -239,7 +239,7 @@
 								"EVENT_ID_HERE"
 							]
 						},
-						"description": "**Function:** Modifies an existing event's details.\n**Required Fields:** `eventId` (URL parameter).\n**Optional Fields:** Any event field (`title`, `description`, `price`, etc.).\n**Expected Response:** `200 OK` with the updated event object."
+						"description": "**Function:** Modifies an existing event's details.\n**Required Fields:** `eventId` (URL parameter).\n**Optional Fields:** Any event field (`title`, `description`, `price`, etc.).\n**Expected Response:** `200 OK` with the updated event object inside the `data` property."
 					},
 					"response": []
 				},
@@ -265,7 +265,7 @@
 								"EVENT_ID_HERE"
 							]
 						},
-						"description": "**Function:** Lists all attendees and their ticket statuses for a specific event.\n**Required Fields:** `eventId` (URL parameter).\n**Optional Fields:** None.\n**Expected Response:** `200 OK` with a list of tickets and attendee names."
+						"description": "**Function:** Lists all attendees and their ticket statuses for a specific event.\n**Required Fields:** `eventId` (URL parameter).\n**Optional Fields:** None.\n**Expected Response:** `200 OK` with a list of tickets and attendee names inside the `data` property."
 					},
 					"response": []
 				}
@@ -288,7 +288,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"eventId\": \"EVENT_ID_HERE\",\n  \"quantity\": 2\n}",
+							"raw": "{\n  \"eventId\": \"EVENT_ID_HERE\",\n  \"ticketsCount\": 2\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -304,7 +304,7 @@
 								"bookings"
 							]
 						},
-						"description": "**Function:** Purchases tickets for an event. Reduces event capacity and generates tickets.\n**Required Fields:** `eventId`, `quantity`.\n**Optional Fields:** None.\n**Expected Response:** `201 Created` with booking details and generated ticket info."
+						"description": "**Function:** Purchases tickets for an event. Reduces event capacity and generates tickets.\n**Required Fields:** `eventId`, `ticketsCount`.\n**Optional Fields:** None.\n**Expected Response:** `201 Created` with booking details and generated ticket info inside the `data` property."
 					},
 					"response": []
 				},
@@ -328,7 +328,7 @@
 								"bookings"
 							]
 						},
-						"description": "**Function:** Retrieves the booking history for the authenticated attendee.\n**Required Fields:** JWT Token.\n**Optional Fields:** None.\n**Expected Response:** `200 OK` with an array of past and upcoming bookings."
+						"description": "**Function:** Retrieves the booking history for the authenticated attendee.\n**Required Fields:** JWT Token.\n**Optional Fields:** None.\n**Expected Response:** `200 OK` with an array of past and upcoming bookings inside the `data` property."
 					},
 					"response": []
 				}
@@ -358,7 +358,7 @@
 								"tickets"
 							]
 						},
-						"description": "**Function:** Fetches all digital tickets owned by the user.\n**Required Fields:** JWT Token.\n**Optional Fields:** None.\n**Expected Response:** `200 OK` with an array of ticket objects (title, date, status)."
+						"description": "**Function:** Fetches all digital tickets owned by the user.\n**Required Fields:** JWT Token.\n**Optional Fields:** None.\n**Expected Response:** `200 OK` with an array of ticket objects (title, date, status) inside the `data` property."
 					},
 					"response": []
 				},
@@ -383,7 +383,7 @@
 								"TICKET_ID_HERE"
 							]
 						},
-						"description": "**Function:** Retrieves detailed info for a single ticket including the QR code.\n**Required Fields:** `ticketId` (URL parameter).\n**Optional Fields:** None.\n**Expected Response:** `200 OK` with full ticket details and base64 QR code data."
+						"description": "**Function:** Retrieves detailed info for a single ticket including the QR code.\n**Required Fields:** `ticketId` (URL parameter).\n**Optional Fields:** None.\n**Expected Response:** `200 OK` with full ticket details and base64 QR code data inside the `data` property."
 					},
 					"response": []
 				},
@@ -400,7 +400,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n  \"ticketToken\": \"TOKEN_FROM_QR\",\n  \"eventId\": \"EVENT_ID_HERE\"\n}",
+							"raw": "{\n  \"ticketCode\": \"TOKEN_FROM_QR\",\n  \"eventId\": \"EVENT_ID_HERE\"\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -417,7 +417,7 @@
 								"check-in"
 							]
 						},
-						"description": "**Function:** Validates a ticket at the door using the token extracted from the QR code.\n**Required Fields:** `ticketToken`, `eventId`.\n**Optional Fields:** None.\n**Expected Response:** `200 OK` with check-in confirmation and attendee name."
+						"description": "**Function:** Validates a ticket at the door using the code extracted from the QR code.\n**Required Fields:** `ticketCode`, `eventId`.\n**Optional Fields:** None.\n**Expected Response:** `200 OK` with check-in confirmation and attendee name inside the `data` property."
 					},
 					"response": []
 				}

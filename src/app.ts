@@ -8,6 +8,9 @@ import eventRoutes from './modules/events/event.routes';
 import bookingRoutes from './modules/bookings/booking.routes';
 import ticketRoutes from './modules/tickets/ticket.routes';
 
+// Middleware
+import { errorMiddleware } from './middleware/error.middleware';
+
 const createApp = (): Application => {
   const app = express();
 
@@ -48,11 +51,7 @@ const createApp = (): Application => {
   });
 
   // ─── Global Error Handler ────────────────────────────────────────────────
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  app.use((err: Error, _req: Request, res: Response, _next: NextFunction) => {
-    console.error('Unhandled error:', err);
-    res.status(500).json({ success: false, message: 'Internal server error.' });
-  });
+  app.use(errorMiddleware);
 
   return app;
 };

@@ -8,7 +8,7 @@ export const AppDataSource = new DataSource({
   type: 'postgres',
   url: process.env.DATABASE_URL,
   synchronize: process.env.NODE_ENV === 'development',
-  logging: process.env.NODE_ENV === 'development',
+  logging: false,
   entities: [User, Event, Booking, Ticket],
   migrations: [],
   subscribers: [],
@@ -18,9 +18,9 @@ export const AppDataSource = new DataSource({
 const connectDB = async (): Promise<void> => {
   try {
     await AppDataSource.initialize();
-    console.log('✅  PostgreSQL connected successfully with TypeORM.');
+    console.log('PostgreSQL connected successfully with TypeORM. ✅');
   } catch (error) {
-    console.error('❌  PostgreSQL connection failed:', error);
+    console.error('PostgreSQL connection failed: ❌', error);
     throw error;
   }
 };

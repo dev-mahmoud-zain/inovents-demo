@@ -1,31 +1,28 @@
-import mongoose from 'mongoose';
+import { DataSource } from 'typeorm';
+import { User } from '../modules/users/user.entity';
+import { Event } from '../modules/events/event.entity';
+import { Booking } from '../modules/bookings/booking.entity';
+import { Ticket } from '../modules/tickets/ticket.entity';
+
+export const AppDataSource = new DataSource({
+  type: 'postgres',
+  url: process.env.DATABASE_URL,
+  synchronize: process.env.NODE_ENV === 'development',
+  logging: process.env.NODE_ENV === 'development',
+  entities: [User, Event, Booking, Ticket],
+  migrations: [],
+  subscribers: [],
+  ssl: process.env.DATABASE_URL?.includes('sslmode=require') ? { rejectUnauthorized: false } : false,
+});
 
 const connectDB = async (): Promise<void> => {
-  if (mongoose.connection.readyState >= 1) return;
-
-  const uri = process.env.MONGO_URI;
-
-  if (!uri) {
-    throw new Error('MONGO_URI is not defined in environment variables.');
-  }
-
   try {
-    await mongoose.connect(uri);
-    console.log('✅  MongoDB connected successfully.');
+    await AppDataSource.initialize();
+    console.log('✅  PostgreSQL connected successfully with TypeORM.');
   } catch (error) {
-    console.error('❌  MongoDB connection failed:', error);
-    // Do not use process.exit(1) in serverless, let the caller handle it
+    console.error('❌  PostgreSQL connection failed:', error);
     throw error;
   }
 };
-
-// Mongoose connection event listeners
-mongoose.connection.on('disconnected', () => {
-  console.warn('⚠️   MongoDB disconnected.');
-});
-
-mongoose.connection.on('error', (err) => {
-  console.error('❌  MongoDB error:', err);
-});
 
 export default connectDB;

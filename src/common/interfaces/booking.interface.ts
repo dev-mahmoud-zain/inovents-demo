@@ -1,9 +1,9 @@
-import { Document, Types } from 'mongoose';
 import { BookingStatus } from '../enums';
 
-export interface IBooking extends Document {
-  attendee: Types.ObjectId;
-  event: Types.ObjectId;
+export interface IBooking {
+  id: string;
+  attendee: string;
+  event: string;
   quantity: number;
   totalPrice: number;
   status: BookingStatus;

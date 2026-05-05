@@ -17,8 +17,8 @@ export const authenticate = (
   const token = authHeader.split(' ')[1];
 
   try {
-    const decoded = verifyToken<{ _id: string; role: string }>(token);
-    (req as AuthRequest).user = decoded as AuthRequest['user'];
+    const decoded = verifyToken<{ id: string; role: string }>(token);
+    (req as AuthRequest).user = decoded as any;
     next();
   } catch {
     res.status(401).json({ success: false, message: 'Unauthorized: Invalid or expired token.' });

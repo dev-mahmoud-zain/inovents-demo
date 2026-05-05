@@ -1,5 +1,3 @@
-import { Document, Types } from 'mongoose';
-
 export interface IVenueLocation {
   address: string;
   coordinates: {
@@ -8,10 +6,11 @@ export interface IVenueLocation {
   };
 }
 
-export interface IEvent extends Document {
+export interface IEvent {
+  id: string;
   title: string;
   description: string;
-  organizer: Types.ObjectId;
+  organizer: string;
   gallery: string[];
   venue: IVenueLocation;
   dateTime: Date;

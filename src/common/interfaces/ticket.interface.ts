@@ -1,11 +1,11 @@
-import { Document, Types } from 'mongoose';
 import { TicketStatus } from '../enums';
 
-export interface ITicket extends Document {
+export interface ITicket {
+  id: string;
   uniqueTicketId: string;
-  booking: Types.ObjectId;
+  booking: string;
   attendeeName: string;
-  event: Types.ObjectId;
+  event: string;
   ticketType: string;
   validationToken: string;
   qrCode: string;

@@ -8,7 +8,7 @@ export class TicketController {
   async getMyTickets(req: Request, res: Response): Promise<void> {
     try {
       const user = (req as AuthRequest).user!;
-      const tickets = await ticketService.findByAttendee(user._id);
+      const tickets = await ticketService.findByAttendee(user.id);
       sendSuccess(res, tickets, 'Tickets fetched.');
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Failed to fetch tickets.';

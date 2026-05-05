@@ -1,6 +1,7 @@
-import { EventModel } from './event.model';
+import { AppDataSource } from '../../config/database';
+import { Event } from './event.entity';
 import { IEvent } from '../../common/interfaces';
-import { Types } from 'mongoose';
+import { Between, ILike, MoreThan, LessThanOrEqual, MoreThanOrEqual } from 'typeorm';
 
 interface CreateEventDto {
   title: string;
@@ -24,37 +25,55 @@ interface EventFilterQuery {
 }
 
 export class EventService {
+  private eventRepository = AppDataSource.getRepository(Event);
+
   async create(dto: CreateEventDto): Promise<IEvent> {
-    return EventModel.create({ ...dto, availableTickets: dto.totalCapacity });
+    const event = this.eventRepository.create({
+      ...dto,
+      availableTickets: dto.totalCapacity,
+    });
+    return this.eventRepository.save(event);
   }
 
   async findAll(filters: EventFilterQuery): Promise<IEvent[]> {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const query: Record<string, any> = {};
+    const where: any = {};
 
     if (filters.keyword) {
-      query.$text = { $search: filters.keyword };
+      // Basic implementation of search
+      where.title = ILike(`%${filters.keyword}%`);
+      // For more complex search across multiple fields, you might need a QueryBuilder
     }
+
     if (filters.date) {
       const day = new Date(filters.date);
       const nextDay = new Date(day);
       nextDay.setDate(nextDay.getDate() + 1);
-      query.dateTime = { $gte: day, $lt: nextDay };
-    }
-    if (filters.price_min !== undefined || filters.price_max !== undefined) {
-      query.price = {};
-      if (filters.price_min !== undefined) query.price.$gte = filters.price_min;
-      if (filters.price_max !== undefined) query.price.$lte = filters.price_max;
-    }
-    if (filters.availability) {
-      query.availableTickets = { $gt: 0 };
+      where.dateTime = Between(day, nextDay);
     }
 
-    return EventModel.find(query).populate('organizer', 'name email').lean();
+    if (filters.price_min !== undefined && filters.price_max !== undefined) {
+      where.price = Between(filters.price_min, filters.price_max);
+    } else if (filters.price_min !== undefined) {
+      where.price = MoreThanOrEqual(filters.price_min);
+    } else if (filters.price_max !== undefined) {
+      where.price = LessThanOrEqual(filters.price_max);
+    }
+
+    if (filters.availability) {
+      where.availableTickets = MoreThan(0);
+    }
+
+    return this.eventRepository.find({
+      where,
+      relations: ['organizerEntity'],
+    });
   }
 
   async findById(id: string): Promise<IEvent | null> {
-    return EventModel.findById(id).populate('organizer', 'name email').lean();
+    return this.eventRepository.findOne({
+      where: { id },
+      relations: ['organizerEntity'],
+    });
   }
 
   async update(
@@ -62,15 +81,20 @@ export class EventService {
     organizerId: string,
     updates: Partial<CreateEventDto>,
   ): Promise<IEvent | null> {
-    return EventModel.findOneAndUpdate(
-      { _id: id, organizer: new Types.ObjectId(organizerId) },
-      updates,
-      { new: true, runValidators: true },
-    );
+    const event = await this.eventRepository.findOne({
+      where: { id, organizer: organizerId },
+    });
+
+    if (!event) return null;
+
+    Object.assign(event, updates);
+    return this.eventRepository.save(event);
   }
 
   async findByOrganizer(organizerId: string): Promise<IEvent[]> {
-    return EventModel.find({ organizer: new Types.ObjectId(organizerId) }).lean();
+    return this.eventRepository.find({
+      where: { organizer: organizerId },
+    });
   }
 }
 

@@ -41,7 +41,7 @@ export class EventController {
   async create(req: Request, res: Response): Promise<void> {
     try {
       const user = (req as AuthRequest).user!;
-      const event = await eventService.create({ ...req.body, organizer: user._id });
+      const event = await eventService.create({ ...req.body, organizer: user.id });
       sendSuccess(res, event, 'Event created.', 201);
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Failed to create event.';
@@ -53,7 +53,7 @@ export class EventController {
   async update(req: Request, res: Response): Promise<void> {
     try {
       const user = (req as AuthRequest).user!;
-      const event = await eventService.update(req.params.eventId as string, user._id, req.body);
+      const event = await eventService.update(req.params.eventId as string, user.id, req.body);
       if (!event) {
         sendError(res, 'Event not found or unauthorized.', 404);
         return;
@@ -69,7 +69,7 @@ export class EventController {
   async getMyEvents(req: Request, res: Response): Promise<void> {
     try {
       const user = (req as AuthRequest).user!;
-      const events = await eventService.findByOrganizer(user._id);
+      const events = await eventService.findByOrganizer(user.id);
       sendSuccess(res, events, 'Your events fetched.');
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Failed to fetch events.';

@@ -10,7 +10,7 @@ export class BookingController {
       const user = (req as AuthRequest).user!;
       const { eventId, quantity } = req.body;
       const booking = await bookingService.createBooking({
-        attendeeId: user._id,
+        attendeeId: user.id,
         eventId,
         quantity: Number(quantity),
       });
@@ -25,7 +25,7 @@ export class BookingController {
   async getMyBookings(req: Request, res: Response): Promise<void> {
     try {
       const user = (req as AuthRequest).user!;
-      const bookings = await bookingService.findByAttendee(user._id);
+      const bookings = await bookingService.findByAttendee(user.id);
       sendSuccess(res, bookings, 'Bookings fetched.');
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Failed to fetch bookings.';
